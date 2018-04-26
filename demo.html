@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+		<input type="text" name="username" id="username">
+		<input type="text" name="age" id="age">
+		<input type="submit" id="sub" value="提交一下">
+		<button class="newsBtn">获取新闻</button>
+		<ul class="newsUl"></ul>
+		<script src="./jquery.js"></script>
+		<script>
+
+			$('#sub').on('click', function() {
+				var date = 'username=' + username.value + '&age=' + age.value;
+				ajaxFunc('POST', './post.php', date, sayInfo, true);
+			})
+			function sayInfo(data) {
+				alert(data);
+			}
+			function ajaxFunc(method, url, data, callback, flag) {
+				var ajaxObj = null;
+				if(window.XMLHttpRequest) {
+					ajaxObj = new XMLHttpRequest();
+				}else {
+					ajaxObj = new ActiveXObject('microsoft.XMLHttp');
+				}
+				method = method.toUpperCase();
+				if(method == 'GET') {
+					ajaxObj.open(method, url, flag);
+					ajaxObj.send();
+				}else if(method == 'POST') {
+					ajaxObj.open(method, url, flag);
+					ajaxObj.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+					ajaxObj.send(data);
+				}
+				ajaxObj.onreadystatechange = function() {
+					if(ajaxObj.readyState == 4) {
+						if(ajaxObj.status = 200) {
+							callback(ajaxObj.responseText);
+						}
+					}
+				}
+			}
+
+			// function ajaxPostFunc() {
+			// 	var ajaxObj = null;
+			// 	if(window.XMLHttpRequest) {
+			// 		ajaxObj = new XMLHttpRequest();
+			// 	}else {
+			// 		ajaxObj = new ActiveXObject('Microsoft.XMLHttp');
+			// 	}
+			// 	ajaxObj.open('POST', './post.php', true);
+			// 	ajaxObj.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			// 	ajaxObj.send('username=mizha&age=18');
+			// 	ajaxObj.onreadystatechange = function() {
+			// 		if(ajaxObj.readyState == 4) {
+			// 			if(ajaxObj.status == 200) {
+			// 				sayInfo(ajaxObj.responseText);
+			// 			}
+			// 		}
+			// 	}
+			// }
+
+			$('.newsBtn').on('click', function() {
+				ajaxFunc('GET', './getNews.php', '', showNews, true);
+			})
+			// function ajaxGetFunc() {
+			// 	var ajaxObj = null;
+			// 	if(window.XMLHttpRequest) {
+			// 		ajaxObj = new XMLHttpRequest();
+			// 	}else {
+			// 		ajaxObj = new ActiveXObject('Microsoft.XMLHttp');
+			// 	}
+			// 	ajaxObj.open('GET', './getNews.php', true);
+			// 	ajaxObj.send();
+			// 	ajaxObj.onreadystatechange = function() {
+			// 		if(ajaxObj.readyState == 4) {
+			// 			if(ajaxObj.status == 200) {
+			// 				showNews(ajaxObj.responseText);
+			// 			}
+			// 		}
+			// 	}
+			// }
+			
+			function showNews(data) {
+				var dataArr = JSON.parse(data);
+				var str = '';
+				dataArr.forEach(function(ele, index) {
+					str += '<li>' + ele.title + '-' + ele.date + '</li>';
+				})
+				$('.newsUl').append(str);
+			}
+
+		</script>
+</body>
+</html>
